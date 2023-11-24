@@ -1,0 +1,3 @@
+src/app/code/core/Mage/Cron/            app/code/core/Mage/Cron/
+src/app/etc/modules/Mage_Cron.xml       app/etc/modules/Mage_Cron.xml
+src/app/locale/en_US/Mage_Cron.csv      app/locale/en_US/Mage_Cron.csv
