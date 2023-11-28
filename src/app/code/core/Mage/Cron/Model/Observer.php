@@ -41,6 +41,8 @@ class Mage_Cron_Model_Observer
      * Cleanup tasks schedule
      *
      * @param Varien_Event_Observer $observer
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function dispatch($observer)
     {
@@ -68,6 +70,8 @@ class Mage_Cron_Model_Observer
      * Process cron queue for tasks marked as always
      *
      * @param Varien_Event_Observer $observer
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function dispatchAlways($observer)
     {
@@ -176,8 +180,8 @@ class Mage_Cron_Model_Observer
                 ->setStatus(Mage_Cron_Model_Schedule::STATUS_PENDING);
 
             for ($time = $now; $time < $timeAhead; $time += 60) {
-                $ts = date('Y-m-d H:i:00', $time);
-                if (!empty($exists[$jobCode . '/' . $ts])) {
+                $timeStamp = date('Y-m-d H:i:00', $time);
+                if (!empty($exists[$jobCode . '/' . $timeStamp])) {
                     // already scheduled
                     continue;
                 }
@@ -347,10 +351,10 @@ class Mage_Cron_Model_Observer
         /** @var Mage_Cron_Model_Schedule $schedule */
         $schedule = Mage::getModel('cron/schedule')->load($jobCode, 'job_code');
         if ($schedule->getId() === null) {
-            $ts = date('Y-m-d H:i:00');
+            $timeStamp = date('Y-m-d H:i:00');
             $schedule->setJobCode($jobCode)
-                ->setCreatedAt($ts)
-                ->setScheduledAt($ts);
+                ->setCreatedAt($timeStamp)
+                ->setScheduledAt($timeStamp);
         }
         $schedule->setStatus(Mage_Cron_Model_Schedule::STATUS_RUNNING)->save();
         return $schedule;
