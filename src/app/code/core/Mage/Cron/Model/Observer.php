@@ -18,6 +18,8 @@
  *
  * @category   Mage
  * @package    Mage_Cron
+ *
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */
 class Mage_Cron_Model_Observer
 {
@@ -155,6 +157,8 @@ class Mage_Cron_Model_Observer
      * @param   SimpleXMLElement $jobs
      * @param   array $exists
      * @return  $this
+     *
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     protected function _generateJobs($jobs, $exists)
     {
@@ -180,8 +184,8 @@ class Mage_Cron_Model_Observer
                 ->setStatus(Mage_Cron_Model_Schedule::STATUS_PENDING);
 
             for ($time = $now; $time < $timeAhead; $time += 60) {
-                $timeStamp = date('Y-m-d H:i:00', $time);
-                if (!empty($exists[$jobCode . '/' . $timeStamp])) {
+                $date = date('Y-m-d H:i:00', $time);
+                if (!empty($exists[$jobCode . '/' . $date])) {
                     // already scheduled
                     continue;
                 }
@@ -270,6 +274,10 @@ class Mage_Cron_Model_Observer
      * @param SimpleXMLElement $jobConfig
      * @param bool $isAlways
      * @return $this|void
+     *
+     * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     protected function _processJob($schedule, $jobConfig, $isAlways = false)
     {
@@ -345,16 +353,18 @@ class Mage_Cron_Model_Observer
      *
      * @param string $jobCode
      * @return Mage_Cron_Model_Schedule
+     *
+     * @SuppressWarnings(PHPMD.BooleanGetMethodName)
      */
     protected function _getAlwaysJobSchedule($jobCode)
     {
         /** @var Mage_Cron_Model_Schedule $schedule */
         $schedule = Mage::getModel('cron/schedule')->load($jobCode, 'job_code');
         if ($schedule->getId() === null) {
-            $timeStamp = date('Y-m-d H:i:00');
+            $date = date('Y-m-d H:i:00');
             $schedule->setJobCode($jobCode)
-                ->setCreatedAt($timeStamp)
-                ->setScheduledAt($timeStamp);
+                ->setCreatedAt($date)
+                ->setScheduledAt($date);
         }
         $schedule->setStatus(Mage_Cron_Model_Schedule::STATUS_RUNNING)->save();
         return $schedule;
