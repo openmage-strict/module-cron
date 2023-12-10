@@ -56,6 +56,8 @@ class Mage_Cron_Model_Schedule extends Mage_Core_Model_Abstract
 
     /**
      * @return bool
+     *
+     * @SuppressWarnings(PHPMD.BooleanGetMethodName)
      */
     public function getIsError(): bool
     {
@@ -69,12 +71,12 @@ class Mage_Cron_Model_Schedule extends Mage_Core_Model_Abstract
      */
     public function setCronExpr($expr)
     {
-        $e = preg_split('#\s+#', $expr, -1, PREG_SPLIT_NO_EMPTY);
-        if (count($e) < 5 || count($e) > 6) {
+        $exprArr = preg_split('#\s+#', $expr, -1, PREG_SPLIT_NO_EMPTY);
+        if (count($exprArr) < 5 || count($exprArr) > 6) {
             throw Mage::exception('Mage_Cron', 'Invalid cron expression: ' . $expr);
         }
 
-        $this->setCronExprArr($e);
+        $this->setCronExprArr($exprArr);
         return $this;
     }
 
@@ -85,11 +87,14 @@ class Mage_Cron_Model_Schedule extends Mage_Core_Model_Abstract
      *
      * @param string|int $time
      * @return bool
+     *
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.ShortVariable)
      */
     public function trySchedule($time)
     {
-        $e = $this->getCronExprArr();
-        if (!$e || !$time) {
+        $exprArr = $this->getCronExprArr();
+        if (!$exprArr || !$time) {
             return false;
         }
         if (!is_numeric($time)) {
@@ -100,13 +105,13 @@ class Mage_Cron_Model_Schedule extends Mage_Core_Model_Abstract
             $time = null;
         }
 
-        $date = getdate(Mage::getSingleton('core/date')->timestamp($time));
+        $d = getdate(Mage::getSingleton('core/date')->timestamp($time));
 
-        $match = $this->matchCronExpression($e[0], $date['minutes'])
-            && $this->matchCronExpression($e[1], $date['hours'])
-            && $this->matchCronExpression($e[2], $date['mday'])
-            && $this->matchCronExpression($e[3], $date['mon'])
-            && $this->matchCronExpression($e[4], $date['wday']);
+        $match = $this->matchCronExpression($exprArr[0], $d['minutes'])
+            && $this->matchCronExpression($exprArr[1], $d['hours'])
+            && $this->matchCronExpression($exprArr[2], $d['mday'])
+            && $this->matchCronExpression($exprArr[3], $d['mon'])
+            && $this->matchCronExpression($exprArr[4], $d['wday']);
 
         if ($match) {
             $this->setCreatedAt(date(Varien_Db_Adapter_Pdo_Mysql::TIMESTAMP_FORMAT));
@@ -120,6 +125,10 @@ class Mage_Cron_Model_Schedule extends Mage_Core_Model_Abstract
      * @param int $num
      * @return bool
      * @throws Mage_Core_Exception
+     *
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     * @SuppressWarnings(PHPMD.ShortVariable)
      */
     public function matchCronExpression($expr, $num)
     {
